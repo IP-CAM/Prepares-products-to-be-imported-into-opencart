@@ -1,7 +1,7 @@
 import xlrd
 import datetime
 
-file_location = "C:/Users/sale/Documents/productImportExample.xlsx"
+file_location = "C:/Users/sale/Documents/ChemFarmImports/productImportExcel/productImportExample.xlsx"
 
 
 workbook = xlrd.open_workbook(file_location)
@@ -46,8 +46,9 @@ index += 1
 
 SEO = sheet.col_values(index,1)
 
+file_name = "productImport.sql"
 
-file = open("productImport.sql","w")
+file = open("../productImportSQL/" + file_name,"w")
 
 # delete
 delete_oc_product = "DELETE FROM `oc_product` WHERE "
@@ -282,7 +283,7 @@ file.write(oc_url_alias)
 
 file.close()
 
-
+print(file_name + " saved.")
 
 
 
