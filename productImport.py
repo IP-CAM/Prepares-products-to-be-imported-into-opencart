@@ -1,8 +1,8 @@
 import xlrd
 import datetime
 
-file_location = "C:/Users/sale/Documents/ChemFarmImports/productImportExcel/productImportExample.xlsx"
-
+#file_location = "C:/Users/sale/Documents/ChemFarmImports/productImportExcel/productImportExample.xlsx"
+file_location = "C:/Users/brian.gao/Downloads/cFarm/productImport/productImportExample.xlsx"
 
 workbook = xlrd.open_workbook(file_location)
 sheet = workbook.sheet_by_index(0)
@@ -206,8 +206,13 @@ if (not isinstance(quantities[i],float)):
     units2 = units[i].split(",")
     quantities2 = quantities[i].split(",")
     prices2 = prices[i].split(",")
-    for j in range(len(prices2)):
-        oc_product_pricing_table += "('" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(units[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "');\n\n"
+    for j in range(len(prices2)-1):
+        oc_product_pricing_table += "('" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "'),\n"
+
+    j += 1
+    print(j)
+    print(units2[j])
+    oc_product_pricing_table += "('" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "');\n\n"
 else:
     oc_product_pricing_table += "('" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(units[i]) + "','" + str(quantities[i]) + "','" + str(prices[i]) + "');\n\n"
 
