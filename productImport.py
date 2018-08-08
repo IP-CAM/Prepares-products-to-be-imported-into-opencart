@@ -1,8 +1,9 @@
 import xlrd
 import datetime
+import codecs
 
 #file_location = "C:/Users/sale/Documents/ChemFarmImports/productImportExcel/productImportExample.xlsx"
-file_location = "C:/Users/brian.gao/Downloads/cFarm/productImport/productImportExample.xlsx"
+file_location = "C:/Users/brian.gao/Downloads/cFarm/productImport/productImportExample2.xlsx"
 
 workbook = xlrd.open_workbook(file_location)
 sheet = workbook.sheet_by_index(0)
@@ -22,6 +23,10 @@ index += 1
 meta_description = sheet.col_values(index,1)
 index += 1
 meta_keyword = sheet.col_values(index,1)
+index += 1
+product_option_value_id = sheet.col_values(index,1)[0]
+index += 1
+option_value_id = sheet.col_values(index,1)
 index += 1
 quantities = sheet.col_values(index,1)
 index += 1
@@ -48,7 +53,8 @@ SEO = sheet.col_values(index,1)
 
 file_name = "productImport.sql"
 
-file = open("../productImportSQL/" + file_name,"w")
+#file = open("../productImportSQL/" + file_name,"w")
+
 
 # delete
 delete_oc_product = "DELETE FROM `oc_product` WHERE "
@@ -63,7 +69,7 @@ delete_oc_url_alias = "DELETE FROM `oc_url_alias` WHERE "
 
 
 delete_oc_product_option = "DELETE FROM `oc_product_option` WHERE "
-delete_oc_product_pricing_table = "DELETE FROM `oc_product_pricing_table` WHERE "
+delete_oc_product_option_value = "DELETE FROM `oc_product_option_value` WHERE "
 
 # insert
 oc_product = "INSERT INTO `oc_product` (`product_id`,`model`,`quantity`,`stock_status_id`,`image`,`shipping`,`date_available`,`weight_class_id`,`length_class_id`,`subtract`,`minimum`,`status`,`date_added`,`date_modified`,`library`,`library_base_price`) VALUES\n"
@@ -84,7 +90,7 @@ oc_product_to_layout = "INSERT INTO `oc_product_to_layout` (`product_id`) VALUES
 oc_url_alias ="INSERT INTO `oc_url_alias` (`query`,`keyword`) VALUES\n"
 
 oc_product_option = "INSERT INTO `oc_product_option` (`product_id`,`option_id`) VALUES\n"
-oc_product_pricing_table = "INSERT INTO `oc_product_pricing_table` (`product_option_id`,`option_id`,`product_id`,`unit`,`quantity`,`price`) VALUES\n"
+oc_product_option_value = "INSERT INTO `oc_product_option_value` (`product_option_value_id`,`product_option_id`,`option_id`,`product_id`,`option_value_id`,`table_unit`,`table_quantity`,`table_price`) VALUES\n"
 
 # iterations
 for i in range(len(product_id)-1):
@@ -100,7 +106,7 @@ for i in range(len(product_id)-1):
     delete_oc_url_alias += "query='product_id=" + str(product_id[i]) + "' OR "
 
     delete_oc_product_option += "product_id='" + str(product_id[i]) + "' OR "
-    delete_oc_product_pricing_table += "product_id='" + str(product_id[i]) + "' OR "
+    delete_oc_product_option_value += "product_id='" + str(product_id[i]) + "' OR "
     
     # oc_product
     oc_product += "('" + str(product_id[i]) + "','Molecules',999,6,'catalog/" + str(image[i]) + "',1,'" + datetime.datetime.today().strftime('%Y-%m-%d') + "',1,1,1,1,1,NOW(),NOW(),'" + str(library[i]) + "','" + str(library_base_price[i]) + "'),\n"
@@ -121,15 +127,20 @@ for i in range(len(product_id)-1):
         oc_product_attribute += "('" + str(product_id[i]) + "','" + str(attribute_ids[i]) + "',1,'" + str(texts[i]) + "'),\n"
     
 
-    # oc_product_pricing_table
+    # oc_product_option_value
     if (not isinstance(quantities[i],float)):
         units2 = units[i].split(",")
         quantities2 = quantities[i].split(",")
         prices2 = prices[i].split(",")
+        option_value_id2 = option_value_id[i].split(",")
         for j in range(len(prices2)):
-            oc_product_pricing_table += "('" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "'),\n"
+            oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "'),\n"
+            # increments product_option_value_id
+            product_option_value_id += 1
     else:
-        oc_product_pricing_table += "('" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(units[i]) + "','" + str(quantities[i]) + "','" + str(prices[i]) + "'),\n"
+        oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id[i]) + "','" + str(units[i]) + "','" + str(quantities[i]) + "','" + str(prices[i]) + "'),\n"
+        # increments product_option_value_id
+        product_option_value_id += 1
 
     # oc_product_option
     oc_product_option += "('" + str(product_id[i]) + "',13),\n"
@@ -179,7 +190,7 @@ delete_oc_product_to_layout += "product_id='" + str(product_id[i]) + "';\n"
 delete_oc_url_alias += "query='product_id=" + str(product_id[i]) + "';\n"
 
 delete_oc_product_option += "product_id='" + str(product_id[i]) + "';\n"
-delete_oc_product_pricing_table += "product_id='" + str(product_id[i]) + "';\n"
+delete_oc_product_option_value += "product_id='" + str(product_id[i]) + "';\n"
                                         
 # oc_product
 oc_product += "('" + str(product_id[i]) + "','Molecules',999,6,'catalog/" + str(image[i]) + "',1,'" + datetime.datetime.today().strftime('%Y-%m-%d') + "',1,1,1,1,1,NOW(),NOW(),'" + str(library[i]) + "','" + str(library_base_price[i]) + "');\n\n"
@@ -196,25 +207,26 @@ if (not isinstance(attribute_ids[i],float)):
     text = texts[i].split(",")
     for j in range(len(text)-1):
         oc_product_attribute += "('" + str(product_id[i]) + "','" + str(attributes[j]) + "',1,'" + str(text[j]) + "'),\n"
+        # increments product_option_value_id
+        product_option_value_id += 1
     j = j + 1
     oc_product_attribute += "('" + str(product_id[i]) + "','" + str(attributes[j]) + "',1,'" + str(text[j]) + "');\n\n"
 else:
     oc_product_attribute += "('" + str(product_id[i]) + "','" + str(attribute_ids[i]) + "',1,'" + str(texts[i]) + "');\n\n"
 
-# oc_product_pricing_table
+# oc_product_option_value
 if (not isinstance(quantities[i],float)):
     units2 = units[i].split(",")
     quantities2 = quantities[i].split(",")
     prices2 = prices[i].split(",")
+    option_value_id2 = option_value_id[i].split(",")
     for j in range(len(prices2)-1):
-        oc_product_pricing_table += "('" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "'),\n"
+        oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "'),\n"
 
     j += 1
-    print(j)
-    print(units2[j])
-    oc_product_pricing_table += "('" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "');\n\n"
+    oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "');\n\n"
 else:
-    oc_product_pricing_table += "('" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(units[i]) + "','" + str(quantities[i]) + "','" + str(prices[i]) + "');\n\n"
+    oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" +str(option_value_id[i]) + "','" + str(units[i]) + "','" + str(quantities[i]) + "','" + str(prices[i]) + "');\n\n"
 
 # oc_product_option
 oc_product_option += "('" + str(product_id[i]) + "',13);\n\n"
@@ -243,47 +255,47 @@ oc_product_to_layout += "('" + str(product_id[i]) + "');\n\n"
 # oc_url_alias
 oc_url_alias += "('product_id=" + str(product_id[i]) + "','" + str(SEO[i]) + "');\n\n"
 
+with codecs.open("../productImportSQL/" + file_name,"w", "utf-8-sig") as file:
+    # writing
+    # delete
+    file.write(delete_oc_product)
+    file.write(delete_oc_product_description)
+    file.write(delete_oc_product_to_store)
+    file.write(delete_oc_product_attribute)
+    file.write(delete_oc_product_option)
+    file.write(delete_oc_product_option_value)
+    #file.write(delete_oc_product_discount)
+    #file.write(delete_oc_product_special)
+    file.write(delete_oc_product_image)
+    file.write(delete_oc_product_to_category)
+    file.write(delete_oc_product_to_category2)
+    #file.write(delete_oc_product_filter)
+    #file.write(delete_oc_product_related)
+    #file.write(delete_oc_product_reward)
+    file.write(delete_oc_product_to_layout)
+    #file.write(delete_oc_product_recurring)
+    file.write(delete_oc_url_alias)
 
-# writing
-# delete
-file.write(delete_oc_product)
-file.write(delete_oc_product_description)
-file.write(delete_oc_product_to_store)
-file.write(delete_oc_product_attribute)
-file.write(delete_oc_product_option)
-file.write(delete_oc_product_pricing_table)
-#file.write(delete_oc_product_discount)
-#file.write(delete_oc_product_special)
-file.write(delete_oc_product_image)
-file.write(delete_oc_product_to_category)
-file.write(delete_oc_product_to_category2)
-#file.write(delete_oc_product_filter)
-#file.write(delete_oc_product_related)
-#file.write(delete_oc_product_reward)
-file.write(delete_oc_product_to_layout)
-#file.write(delete_oc_product_recurring)
-file.write(delete_oc_url_alias)
-
-file.write("\n")
-# insertions
-file.write(oc_product)
-file.write(oc_product_description)
-file.write(oc_product_to_store)
-file.write(oc_product_attribute)
-file.write(oc_product_option)
-file.write(oc_product_pricing_table)
-#file.write(oc_product_option)
-#file.write(oc_product_discount)
-#file.write(oc_product_special)
-file.write(oc_product_image)
-file.write(oc_product_to_category)
-file.write(oc_product_to_category2)
-#file.write(oc_product_filter)
-#file.write(oc_product_related)
-#file.write(oc_product_reward)
-file.write(oc_product_to_layout)
-#file.write(oc_product_recurring)
-file.write(oc_url_alias)
+    file.write("\n")
+    # insertions
+    file.write(oc_product)
+    file.write(oc_product_description)
+    file.write(oc_product_to_store)
+    file.write(oc_product_attribute)
+    file.write(oc_product_option)
+    file.write(oc_product_option_value)
+    #file.write(oc_product_option)
+    #file.write(oc_product_discount)
+    #file.write(oc_product_special)
+    file.write(oc_product_image)
+    file.write(oc_product_to_category)
+    file.write(oc_product_to_category2)
+    #file.write(oc_product_filter)
+    #file.write(oc_product_related)
+    #file.write(oc_product_reward)
+    file.write(oc_product_to_layout)
+    #file.write(oc_product_recurring)
+    file.write(oc_url_alias)
 
 
 file.close()
