@@ -295,6 +295,23 @@ oc_product_to_layout += "('" + str(product_id[i]) + "');\n\n"
 # oc_url_alias
 oc_url_alias += "('product_id=" + str(product_id[i]) + "','" + str(SEO[i]) + "');\n\n"
 
+
+
+
+# updates the library product's prices
+update_library_prices = ""
+update_library_prices += "UPDATE `oc_product_option_value` pov\n"
+update_library_prices += "INNER JOIN `oc_product` p on\n\t\t"
+update_library_prices +=        "pov.product_id = p.product_id\n"
+update_library_prices += "INNER JOIN `oc_product_to_category2` pc on\n\t\t"
+update_library_prices +=            "pov.product_id = pc.product_id\n"
+update_library_prices +=            "SET pov.table_price = (SELECT COUNT(*)\n\t\t\t"
+update_library_prices +=            "FROM `oc_product_to_category2` pc2\n\t\t\t"
+update_library_prices +=            "WHERE pc2.category_id = pc.category_id\n\t\t\t"
+update_library_prices +=            "AND library = 0) * p.library_base_price * pov.percentage * pov.multiplier\n"
+update_library_prices += "WHERE p.library = 1;"
+
+
 with codecs.open("../productImportSQL/" + file_name,"w", "utf-8-sig") as file:
     # writing
     # delete
@@ -336,6 +353,10 @@ with codecs.open("../productImportSQL/" + file_name,"w", "utf-8-sig") as file:
     file.write(oc_product_to_layout)
     #file.write(oc_product_recurring)
     file.write(oc_url_alias)
+
+    # updates library product prices
+    file.write(update_library_prices)
+    
 
 
 file.close()
