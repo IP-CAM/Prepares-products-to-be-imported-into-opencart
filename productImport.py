@@ -2,8 +2,8 @@ import xlrd
 import datetime
 import codecs
 
-#file_location = "C:/Users/sale/Documents/ChemFarmImports/productImportExcel/productImportExample.xlsx"
-file_location = "C:/Users/brian.gao/Downloads/cFarm/productImport/productImportExample2.xlsx"
+file_location = "C:/Users/sale/Documents/ChemFarmImports/productImportExcel/productImportExample2.xlsx"
+#file_location = "C:/Users/brian.gao/Downloads/cFarm/productImport/productImportExample2.xlsx"
 
 workbook = xlrd.open_workbook(file_location)
 sheet = workbook.sheet_by_index(0)
@@ -57,7 +57,7 @@ file_name = "productImport.sql"
 
 
 # delete
-delete_oc_product = "DELETE FROM `oc_product` WHERE "
+delete_oc_product = "DEDELETE FROM `oc_product` WHERE "
 delete_oc_product_description = "DELETE FROM `oc_product_description` WHERE "
 delete_oc_product_to_store = "DELETE FROM `oc_product_to_store` WHERE "
 delete_oc_product_attribute = "DELETE FROM `oc_product_attribute` WHERE "
@@ -131,7 +131,7 @@ for i in range(len(product_id)-1):
     if (not isinstance(quantities[i],float)):
         units2 = units[i].split(",")
         quantities2 = quantities[i].split(",")
-        prices2 = prices[i].split(",")
+        prices2 = prices[i].split(";")
         option_value_id2 = option_value_id[i].split(",")
         for j in range(len(prices2)):
             oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "'),\n"
@@ -207,8 +207,7 @@ if (not isinstance(attribute_ids[i],float)):
     text = texts[i].split(",")
     for j in range(len(text)-1):
         oc_product_attribute += "('" + str(product_id[i]) + "','" + str(attributes[j]) + "',1,'" + str(text[j]) + "'),\n"
-        # increments product_option_value_id
-        product_option_value_id += 1
+        
     j = j + 1
     oc_product_attribute += "('" + str(product_id[i]) + "','" + str(attributes[j]) + "',1,'" + str(text[j]) + "');\n\n"
 else:
@@ -218,11 +217,12 @@ else:
 if (not isinstance(quantities[i],float)):
     units2 = units[i].split(",")
     quantities2 = quantities[i].split(",")
-    prices2 = prices[i].split(",")
+    prices2 = prices[i].split(";")
     option_value_id2 = option_value_id[i].split(",")
     for j in range(len(prices2)-1):
         oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "'),\n"
-
+        # increments product_option_value_id
+        product_option_value_id += 1
     j += 1
     oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "');\n\n"
 else:
