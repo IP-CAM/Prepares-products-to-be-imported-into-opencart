@@ -2,8 +2,8 @@ import xlrd
 import datetime
 import codecs
 
-file_location = "C:/Users/sale/Documents/ChemFarmImports/productImportExcel/productImportExample2.xlsx"
-#file_location = "C:/Users/brian.gao/Downloads/cFarm/productImport/productImportExample2.xlsx"
+#file_location = "C:/Users/sale/Documents/ChemFarmImports/productImportExcel/productImportExample2.xlsx"
+file_location = "C:/Users/brian.gao/Downloads/cFarm/productImport/productImportExample2.xlsx"
 
 workbook = xlrd.open_workbook(file_location)
 sheet = workbook.sheet_by_index(0)
@@ -33,6 +33,10 @@ index += 1
 units = sheet.col_values(index,1)
 index += 1
 prices = sheet.col_values(index,1)
+index += 1
+percentage = sheet.col_values(index,1)
+index += 1
+multiplier = sheet.col_values(index,1)
 index += 1
 image = sheet.col_values(index,1)
 index += 1
@@ -90,7 +94,7 @@ oc_product_to_layout = "INSERT INTO `oc_product_to_layout` (`product_id`) VALUES
 oc_url_alias ="INSERT INTO `oc_url_alias` (`query`,`keyword`) VALUES\n"
 
 oc_product_option = "INSERT INTO `oc_product_option` (`product_id`,`option_id`) VALUES\n"
-oc_product_option_value = "INSERT INTO `oc_product_option_value` (`product_option_value_id`,`product_option_id`,`option_id`,`product_id`,`option_value_id`,`table_unit`,`table_quantity`,`table_price`) VALUES\n"
+oc_product_option_value = "INSERT INTO `oc_product_option_value` (`product_option_value_id`,`product_option_id`,`option_id`,`product_id`,`option_value_id`,`table_unit`,`table_quantity`,`table_price`,`percentage`,`multiplier`) VALUES\n"
 
 # iterations
 for i in range(len(product_id)-1):
@@ -128,19 +132,37 @@ for i in range(len(product_id)-1):
     
 
     # oc_product_option_value
-    if (not isinstance(quantities[i],float)):
-        units2 = units[i].split(",")
-        quantities2 = quantities[i].split(",")
-        prices2 = prices[i].split(";")
-        option_value_id2 = option_value_id[i].split(",")
-        for j in range(len(prices2)):
-            oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "'),\n"
+    if (library[i]):
+        if (not isinstance(quantities[i],float)):
+            units2 = units[i].split(",")
+            quantities2 = quantities[i].split(",")
+            prices2 = prices[i].split(";")
+            option_value_id2 = option_value_id[i].split(",")
+            percentage2 = percentage[i].split(",")
+            multiplier2 = multiplier[i].split(",")
+            for j in range(len(prices2)):
+                oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "','" + str(percentage2[j]) + "','" + str(multiplier2[j]) + "'),\n"
+                # increments product_option_value_id
+                product_option_value_id += 1
+        else:
+            oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id[i]) + "','" + str(units[i]) + "','" + str(quantities[i]) + "','" + str(prices[i]) + "','" + str(percentage[i]) + "','" + str(multiplier[i]) + "'),\n"
             # increments product_option_value_id
             product_option_value_id += 1
     else:
-        oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id[i]) + "','" + str(units[i]) + "','" + str(quantities[i]) + "','" + str(prices[i]) + "'),\n"
-        # increments product_option_value_id
-        product_option_value_id += 1
+        if (not isinstance(quantities[i],float)):
+            units2 = units[i].split(",")
+            quantities2 = quantities[i].split(",")
+            prices2 = prices[i].split(";")
+            option_value_id2 = option_value_id[i].split(",")
+            for j in range(len(prices2)):
+                oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "','',''),\n"
+                # increments product_option_value_id
+                product_option_value_id += 1
+        else:
+            oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id[i]) + "','" + str(units[i]) + "','" + str(quantities[i]) + "','" + str(prices[i]) + "','',''),\n"
+            # increments product_option_value_id
+            product_option_value_id += 1
+    
 
     # oc_product_option
     oc_product_option += "('" + str(product_id[i]) + "',13),\n"
@@ -214,19 +236,37 @@ else:
     oc_product_attribute += "('" + str(product_id[i]) + "','" + str(attribute_ids[i]) + "',1,'" + str(texts[i]) + "');\n\n"
 
 # oc_product_option_value
-if (not isinstance(quantities[i],float)):
-    units2 = units[i].split(",")
-    quantities2 = quantities[i].split(",")
-    prices2 = prices[i].split(";")
-    option_value_id2 = option_value_id[i].split(",")
-    for j in range(len(prices2)-1):
-        oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "'),\n"
-        # increments product_option_value_id
-        product_option_value_id += 1
-    j += 1
-    oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "');\n\n"
+if (library[i]):
+    if (not isinstance(quantities[i],float)):
+        units2 = units[i].split(",")
+        quantities2 = quantities[i].split(",")
+        prices2 = prices[i].split(";")
+        option_value_id2 = option_value_id[i].split(",")
+        percentage2 = percentage[i].split(",")
+        multiplier2 = multiplier[i].split(",")
+        for j in range(len(prices2)-1):
+            oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "','" + str(percentage2[j]) + "','" + str(multiplier2[j]) + "'),\n"
+            # increments product_option_value_id
+            product_option_value_id += 1
+        j += 1
+        oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "','" + str(percentage2[j]) + "','" + str(multiplier2[j]) + "');\n\n"
+    else:
+        oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" +str(option_value_id[i]) + "','" + str(units[i]) + "','" + str(quantities[i]) + "','" + str(prices[i]) + "','" + str(percentage[i]) + "','" + str(multiplier[i]) + "');\n\n"
+
 else:
-    oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" +str(option_value_id[i]) + "','" + str(units[i]) + "','" + str(quantities[i]) + "','" + str(prices[i]) + "');\n\n"
+    if (not isinstance(quantities[i],float)):
+        units2 = units[i].split(",")
+        quantities2 = quantities[i].split(",")
+        prices2 = prices[i].split(";")
+        option_value_id2 = option_value_id[i].split(",")
+        for j in range(len(prices2)-1):
+            oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "','',''),\n"
+            # increments product_option_value_id
+            product_option_value_id += 1
+        j += 1
+        oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "','','');\n\n"
+    else:
+        oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" +str(option_value_id[i]) + "','" + str(units[i]) + "','" + str(quantities[i]) + "','" + str(prices[i]) + "','','');\n\n"
 
 # oc_product_option
 oc_product_option += "('" + str(product_id[i]) + "',13);\n\n"
