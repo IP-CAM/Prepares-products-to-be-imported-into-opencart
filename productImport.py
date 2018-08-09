@@ -2,8 +2,8 @@ import xlrd
 import datetime
 import codecs
 
-#file_location = "C:/Users/sale/Documents/ChemFarmImports/productImportExcel/productImportExample2.xlsx"
-file_location = "C:/Users/brian.gao/Downloads/cFarm/productImport/productImportExample2.xlsx"
+file_location = "C:/Users/sale/Documents/ChemFarmImports/Products/productImportExample2.xlsx"
+#file_location = "C:/Users/brian.gao/Downloads/cFarm/productImport/productImportExample2.xlsx"
 
 workbook = xlrd.open_workbook(file_location)
 sheet = workbook.sheet_by_index(0)
@@ -57,7 +57,7 @@ SEO = sheet.col_values(index,1)
 
 file_name = "productImport.sql"
 
-#file = open("../productImportSQL/" + file_name,"w")
+file = open("../productImportSQL/" + file_name,"w")
 
 
 # delete
@@ -93,7 +93,7 @@ oc_product_to_layout = "INSERT INTO `oc_product_to_layout` (`product_id`) VALUES
 #oc_product_recurring = "INSERT INTO `oc_product_recurring`"
 oc_url_alias ="INSERT INTO `oc_url_alias` (`query`,`keyword`) VALUES\n"
 
-oc_product_option = "INSERT INTO `oc_product_option` (`product_id`,`option_id`) VALUES\n"
+oc_product_option = "INSERT INTO `oc_product_option` (`product_option_id`,`product_id`,`option_id`) VALUES\n"
 oc_product_option_value = "INSERT INTO `oc_product_option_value` (`product_option_value_id`,`product_option_id`,`option_id`,`product_id`,`option_value_id`,`table_unit`,`table_quantity`,`table_price`,`percentage`,`multiplier`) VALUES\n"
 
 # iterations
@@ -165,7 +165,7 @@ for i in range(len(product_id)-1):
     
 
     # oc_product_option
-    oc_product_option += "('" + str(product_id[i]) + "',13),\n"
+    oc_product_option += "('" + str(product_option_id[i]) + "','" + str(product_id[i]) + "',13),\n"
     
 
     # oc_product_discount
@@ -269,7 +269,7 @@ else:
         oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" +str(option_value_id[i]) + "','" + str(units[i]) + "','" + str(quantities[i]) + "','" + str(prices[i]) + "','','');\n\n"
 
 # oc_product_option
-oc_product_option += "('" + str(product_id[i]) + "',13);\n\n"
+oc_product_option += "('" + str(product_option_id[i]) + "','" + str(product_id[i]) + "',13);\n\n"
 
 
 # oc_product_image
@@ -305,10 +305,10 @@ update_library_prices += "INNER JOIN `oc_product` p on\n\t\t"
 update_library_prices +=        "pov.product_id = p.product_id\n"
 update_library_prices += "INNER JOIN `oc_product_to_category2` pc on\n\t\t"
 update_library_prices +=            "pov.product_id = pc.product_id\n"
-update_library_prices +=            "SET pov.table_price = (SELECT COUNT(*)\n\t\t\t"
+update_library_prices +=            "SET pov.table_price = ((SELECT COUNT(*)\n\t\t\t"
 update_library_prices +=            "FROM `oc_product_to_category2` pc2\n\t\t\t"
 update_library_prices +=            "WHERE pc2.category_id = pc.category_id\n\t\t\t"
-update_library_prices +=            "AND library = 0) * p.library_base_price * pov.percentage * pov.multiplier\n"
+update_library_prices +=            "AND library = 0)-1) * p.library_base_price * pov.percentage * pov.multiplier\n"
 update_library_prices += "WHERE p.library = 1;"
 
 
