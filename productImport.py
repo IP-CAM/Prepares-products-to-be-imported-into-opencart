@@ -1,8 +1,8 @@
 import xlrd
 import datetime
 import codecs
-
-file_location = "C:/Users/sale/Documents/ChemFarmImports/Products/productImportExample2.xlsx"
+file_name = "Product_Import_08152018_2"
+file_location = "C:/Users/sale/Documents/ChemFarmImports/productImportExcel/" + file_name + ".xlsx"
 #file_location = "C:/Users/brian.gao/Downloads/cFarm/productImport/productImportExample2.xlsx"
 
 workbook = xlrd.open_workbook(file_location)
@@ -55,7 +55,6 @@ index += 1
 
 SEO = sheet.col_values(index,1)
 
-file_name = "productImport.sql"
 
 file = open("../productImportSQL/" + file_name,"w")
 
@@ -95,6 +94,8 @@ oc_url_alias ="INSERT INTO `oc_url_alias` (`query`,`keyword`) VALUES\n"
 
 oc_product_option = "INSERT INTO `oc_product_option` (`product_option_id`,`product_id`,`option_id`) VALUES\n"
 oc_product_option_value = "INSERT INTO `oc_product_option_value` (`product_option_value_id`,`product_option_id`,`option_id`,`product_id`,`option_value_id`,`table_unit`,`table_quantity`,`table_price`,`percentage`,`multiplier`) VALUES\n"
+
+i = -1
 
 # iterations
 for i in range(len(product_id)-1):
@@ -151,9 +152,9 @@ for i in range(len(product_id)-1):
     else:
         if (not isinstance(quantities[i],float)):
             units2 = units[i].split(",")
-            quantities2 = quantities[i].split(",")
+            quantities2 = quantities[i].split(";")
             prices2 = prices[i].split(";")
-            option_value_id2 = option_value_id[i].split(",")
+            option_value_id2 = option_value_id[i].split(";")
             for j in range(len(prices2)):
                 oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "','',''),\n"
                 # increments product_option_value_id
@@ -224,9 +225,10 @@ oc_product_description += "('" + str(product_id[i]) + "',1,'" + str(name[i]) + "
 oc_product_to_store += "('" + str(product_id[i]) + "',0);\n\n"
 
 # oc_product_attribute
-if (not isinstance(attribute_ids[i],float)):
+if (not (isinstance(attribute_ids[i],float) and attribute_ids[i])):
     attributes = attribute_ids[i].split(",")
     text = texts[i].split(",")
+    j = -1
     for j in range(len(text)-1):
         oc_product_attribute += "('" + str(product_id[i]) + "','" + str(attributes[j]) + "',1,'" + str(text[j]) + "'),\n"
         
@@ -239,12 +241,15 @@ else:
 if (library[i]):
     if (not isinstance(quantities[i],float)):
         units2 = units[i].split(",")
-        quantities2 = quantities[i].split(",")
+        quantities2 = quantities[i].split(";")
         prices2 = prices[i].split(";")
-        option_value_id2 = option_value_id[i].split(",")
+        option_value_id2 = option_value_id[i].split(";")
         percentage2 = percentage[i].split(",")
         multiplier2 = multiplier[i].split(",")
         for j in range(len(prices2)-1):
+            print("i is " + str(i))
+            print("j is " + str(j))
+            print("poi is " + str(product_option_id[i]))
             oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "','" + str(percentage2[j]) + "','" + str(multiplier2[j]) + "'),\n"
             # increments product_option_value_id
             product_option_value_id += 1
@@ -308,11 +313,11 @@ update_library_prices +=            "pov.product_id = pc.product_id\n"
 update_library_prices +=            "SET pov.table_price = ((SELECT COUNT(*)\n\t\t\t"
 update_library_prices +=            "FROM `oc_product_to_category2` pc2\n\t\t\t"
 update_library_prices +=            "WHERE pc2.category_id = pc.category_id\n\t\t\t"
-update_library_prices +=            "AND library = 0)-1) * p.library_base_price * pov.percentage * pov.multiplier\n"
+update_library_prices +=            "AND library = 0)) * p.library_base_price * pov.percentage * pov.multiplier\n"
 update_library_prices += "WHERE p.library = 1;"
 
 
-with codecs.open("../productImportSQL/" + file_name,"w", "utf-8-sig") as file:
+with codecs.open("../productImportSQL/" + file_name + ".sql","w", "utf-8-sig") as file:
     # writing
     # delete
     file.write(delete_oc_product)
