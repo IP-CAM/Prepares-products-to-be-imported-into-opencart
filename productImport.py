@@ -312,7 +312,7 @@ update_library_prices +=            "pov.product_id = pc.product_id\n"
 update_library_prices +=            "SET pov.table_price = ((SELECT COUNT(*)\n\t\t\t"
 update_library_prices +=            "FROM `oc_product_to_category2` pc2\n\t\t\t"
 update_library_prices +=            "WHERE pc2.category_id = pc.category_id\n\t\t\t"
-update_library_prices +=            "AND library = 0)) * p.library_base_price * pov.percentage * pov.multiplier\n"
+update_library_prices +=            "AND pc2.library = 0)) * p.library_base_price * pov.percentage * pov.multiplier\n"
 update_library_prices += "WHERE p.library = 1;"
 
 
