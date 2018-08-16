@@ -228,7 +228,6 @@ oc_product_to_store += "('" + str(product_id[i]) + "',0);\n\n"
 if (not (isinstance(attribute_ids[i],float) and attribute_ids[i])):
     attributes = attribute_ids[i].split(";")
     text = texts[i].split(";")
-    j = -1
     for j in range(len(text)-1):
         oc_product_attribute += "('" + str(product_id[i]) + "','" + str(attributes[j]) + "',1,'" + str(text[j]) + "'),\n"
         
