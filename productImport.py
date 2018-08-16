@@ -124,8 +124,8 @@ for i in range(len(product_id)-1):
 
     # oc_product_attribute
     if (not isinstance(attribute_ids[i],float)):
-        attributes = attribute_ids[i].split(",")
-        text = texts[i].split(",")
+        attributes = attribute_ids[i].split(";")
+        text = texts[i].split(";")
         for j in range(len(attributes)):
             oc_product_attribute += "('" + str(product_id[i]) + "','" + str(attributes[j]) + "',1,'" + str(text[j]) + "'),\n"
     else:
@@ -135,12 +135,12 @@ for i in range(len(product_id)-1):
     # oc_product_option_value
     if (library[i]):
         if (not isinstance(quantities[i],float)):
-            units2 = units[i].split(",")
-            quantities2 = quantities[i].split(",")
+            units2 = units[i].split(";")
+            quantities2 = quantities[i].split(";")
             prices2 = prices[i].split(";")
-            option_value_id2 = option_value_id[i].split(",")
-            percentage2 = percentage[i].split(",")
-            multiplier2 = multiplier[i].split(",")
+            option_value_id2 = option_value_id[i].split(";")
+            percentage2 = percentage[i].split(";")
+            multiplier2 = multiplier[i].split(";")
             for j in range(len(prices2)):
                 oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "','" + str(percentage2[j]) + "','" + str(multiplier2[j]) + "'),\n"
                 # increments product_option_value_id
@@ -151,7 +151,7 @@ for i in range(len(product_id)-1):
             product_option_value_id += 1
     else:
         if (not isinstance(quantities[i],float)):
-            units2 = units[i].split(",")
+            units2 = units[i].split(";")
             quantities2 = quantities[i].split(";")
             prices2 = prices[i].split(";")
             option_value_id2 = option_value_id[i].split(";")
@@ -179,7 +179,7 @@ for i in range(len(product_id)-1):
     # oc_product_to_category
     # oc_product_to_category2
     if (not isinstance(categories[i],float)):
-        category = categories[i].split(",")
+        category = categories[i].split(";")
         for j in range(len(category)):
             oc_product_to_category += "('" + str(product_id[i]) + "','" + str(category[j]) + "'),\n"
             oc_product_to_category2 += "('" + str(product_id[i]) + "','" + str(category[j]) + "'),\n"
@@ -226,8 +226,8 @@ oc_product_to_store += "('" + str(product_id[i]) + "',0);\n\n"
 
 # oc_product_attribute
 if (not (isinstance(attribute_ids[i],float) and attribute_ids[i])):
-    attributes = attribute_ids[i].split(",")
-    text = texts[i].split(",")
+    attributes = attribute_ids[i].split(";")
+    text = texts[i].split(";")
     j = -1
     for j in range(len(text)-1):
         oc_product_attribute += "('" + str(product_id[i]) + "','" + str(attributes[j]) + "',1,'" + str(text[j]) + "'),\n"
@@ -240,12 +240,12 @@ else:
 # oc_product_option_value
 if (library[i]):
     if (not isinstance(quantities[i],float)):
-        units2 = units[i].split(",")
+        units2 = units[i].split(";")
         quantities2 = quantities[i].split(";")
         prices2 = prices[i].split(";")
         option_value_id2 = option_value_id[i].split(";")
-        percentage2 = percentage[i].split(",")
-        multiplier2 = multiplier[i].split(",")
+        percentage2 = percentage[i].split(";")
+        multiplier2 = multiplier[i].split(";")
         for j in range(len(prices2)-1):
             print("i is " + str(i))
             print("j is " + str(j))
@@ -260,10 +260,10 @@ if (library[i]):
 
 else:
     if (not isinstance(quantities[i],float)):
-        units2 = units[i].split(",")
-        quantities2 = quantities[i].split(",")
+        units2 = units[i].split(";")
+        quantities2 = quantities[i].split(";")
         prices2 = prices[i].split(";")
-        option_value_id2 = option_value_id[i].split(",")
+        option_value_id2 = option_value_id[i].split(";")
         for j in range(len(prices2)-1):
             oc_product_option_value += "('" + str(product_option_value_id) + "','" + str(product_option_id[i]) + "',13,'" + str(product_id[i]) + "','" + str(option_value_id2[j]) + "','" + str(units2[j]) + "','" + str(quantities2[j]) + "','" + str(prices2[j]) + "','',''),\n"
             # increments product_option_value_id
@@ -283,7 +283,7 @@ oc_product_image += "('" + str(product_id[i]) + "','catalog/" + str(image[i]) + 
 # oc_product_to_category
 # oc_product_to_category2
 if (not isinstance(categories[i],float)):
-    category = categories[i].split(",")
+    category = categories[i].split(";")
     for j in range(len(category)-1):
         oc_product_to_category += "('" + str(product_id[i]) + "','" + str(category[j]) + "'),\n"
         oc_product_to_category2 += "('" + str(product_id[i]) + "','" + str(category[j]) + "'),\n"
