@@ -84,7 +84,7 @@ oc_product_attribute = "INSERT INTO `oc_product_attribute` (`product_id`,`attrib
 oc_product_image = "INSERT INTO `oc_product_image` (`product_id`,`image`) VALUES\n"
 #oc_product_to_download = "INSERT INTO `oc_product_to_download`"
 oc_product_to_category = "INSERT INTO `oc_product_to_category` (`product_id`,`category_id`) VALUES\n"
-oc_product_to_category2 = "INSERT INTO `oc_product_to_category2` (`product_id`,`category_id`) VALUES\n"
+oc_product_to_category2 = "INSERT INTO `oc_product_to_category2` (`product_id`,`category_id`,`library`) VALUES\n"
 ##oc_product_filter = "INSERT INTO `oc_product_filter`"
 ##oc_product_related = "INSERT INTO `oc_product_related`"
 ##oc_product_reward = "INSERT INTO `oc_product_reward`"
@@ -182,10 +182,10 @@ for i in range(len(product_id)-1):
         category = categories[i].split(";")
         for j in range(len(category)):
             oc_product_to_category += "('" + str(product_id[i]) + "','" + str(category[j]) + "'),\n"
-            oc_product_to_category2 += "('" + str(product_id[i]) + "','" + str(category[j]) + "'),\n"
+            oc_product_to_category2 += "('" + str(product_id[i]) + "','" + str(category[j]) + "','" + str(library[i]) +'),\n"
     else:
         oc_product_to_category += "('" + str(product_id[i]) + "','" + str(categories[i]) + "'),\n"
-        oc_product_to_category2 += "('" + str(product_id[i]) + "','" + str(categories[i]) + "'),\n"
+        oc_product_to_category2 += "('" + str(product_id[i]) + "','" + str(categories[i]) + "','" + str(library[i]) + "'),\n"
 
     # oc_product_to_layout
     oc_product_to_layout += "('" + str(product_id[i]) + "'),\n"
@@ -285,14 +285,14 @@ if (not isinstance(categories[i],float)):
     category = categories[i].split(";")
     for j in range(len(category)-1):
         oc_product_to_category += "('" + str(product_id[i]) + "','" + str(category[j]) + "'),\n"
-        oc_product_to_category2 += "('" + str(product_id[i]) + "','" + str(category[j]) + "'),\n"
+        oc_product_to_category2 += "('" + str(product_id[i]) + "','" + str(category[j]) + "','" + str(library[i]) + "'),\n"
 
     j = j + 1
     oc_product_to_category += "('" + str(product_id[i]) + "','" + str(category[j]) + "');\n\n"
-    oc_product_to_category2 += "('" + str(product_id[i]) + "','" + str(category[j]) + "');\n\n"
+    oc_product_to_category2 += "('" + str(product_id[i]) + "','" + str(category[j]) + "','" + str(library[i]) + "');\n\n"
 else:
     oc_product_to_category += "('" + str(product_id[i]) + "','" + str(categories[i]) + "');\n\n"
-    oc_product_to_category2 += "('" + str(product_id[i]) + "','" + str(categories[i]) + "');\n\n"
+    oc_product_to_category2 += "('" + str(product_id[i]) + "','" + str(categories[i]) + "','" + str(library[i]) + "');\n\n"
 # oc_product_to_layout
 oc_product_to_layout += "('" + str(product_id[i]) + "');\n\n"
 
